@@ -1,8 +1,34 @@
-const { request, response } = require('express');
+const { request, response } = require("express");
 
-const { httpExeption, _validData } = require('../common');
+const { httpExeption, _validData } = require("../common");
 
-const { User, Book, Page } = require('../models');
+const { User, Book, Page } = require("../models");
+
+const pageGetAll = async (req = request, res = response) => {
+    try {
+        const { book } = req.params();
+        const result = await Page.find({ libro_id: book });
+        const data = {
+            count: result.length,
+            results: result.map((r) => {
+                return {
+                    id: r._id,
+                    libro: r.libro_id,
+                    page: r.page,
+                    image: r.image,
+                    lock: r.lock,
+                    request: {
+                        type: "GET",
+                        url: `http://localhost:4000/api/page/${r._id}`,
+                    },
+                };
+            }),
+        };
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+};
 
 const pageCreate = async (req = request, res = response) => {
     try {
@@ -40,7 +66,7 @@ const pageCreate = async (req = request, res = response) => {
                 user_id,
                 page,
                 request: {
-                    type: 'GET',
+                    type: "GET",
                     url: `http://localhost:8080/api/page`,
                 },
             },
@@ -49,45 +75,6 @@ const pageCreate = async (req = request, res = response) => {
     } catch (error) {
         const { status, data } = _validData(error);
         res.status(status).json({ data });
-    }
-};
-
-// const countPage = async (req, res) => {
-//     try {
-//         const { libro_id } = req.body;
-//         const result = Page.find({ libro_id });
-//         const data = {
-//             message: ``,
-//         };
-//     } catch (error) {
-//         const { status, data } = _validData(error);
-//         res.status(status).json({ data });
-//     }
-// };
-
-const pageGetAll = async (req = request, res = response) => {
-    try {
-        // !verificar si es de libro especifico
-        const result = await Page.find();
-        const data = {
-            count: result.length,
-            results: result.map((r) => {
-                return {
-                    id: r._id,
-                    libro: r.libro_id,
-                    page: r.page,
-                    image: r.image,
-                    lock: r.lock,
-                    request: {
-                        type: 'GET',
-                        url: `http://localhost:4000/api/page/${r._id}`,
-                    },
-                };
-            }),
-        };
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(500).json({ error });
     }
 };
 
@@ -100,11 +87,11 @@ const pageLock = (req = request, res = response) => {
             { $set: { lock: !lock } }
         );
         const data = {
-            message: 'Se actualizo el estado correctamente',
+            message: "Se actualizo el estado correctamente",
             result: {
                 id: result._id,
                 request: {
-                    type: 'GET',
+                    type: "GET",
                     url: `http://localhost:8080/api/page/`,
                 },
             },
@@ -124,7 +111,7 @@ const pageUp = async (req = request, res = response) => {
         if (page <= 0 && page < count_page) {
             throw new httpExeption(
                 400,
-                'El número de la página no se puede aumentar más.'
+                "El número de la página no se puede aumentar más."
             );
         }
         const { _id } = await Page.findOne({ page: page + 1, libro_id });
@@ -132,10 +119,10 @@ const pageUp = async (req = request, res = response) => {
         await Page.findOneAndUpdate({ _id }, { $set: { page } });
         await Page.findOneAndUpdate({ _id: id }, { $set: { page: page + 1 } });
         const data = {
-            message: 'Se actualizo correctamente los datos.',
+            message: "Se actualizo correctamente los datos.",
             result: {
                 request: {
-                    type: 'GET',
+                    type: "GET",
                     url: `http://localhost:8080/api/page`,
                 },
             },
@@ -153,7 +140,7 @@ const pageDown = async (req = request, res = response) => {
         if (page <= 1) {
             throw new httpExeption(
                 400,
-                'El número de la página no se puede reducir más.'
+                "El número de la página no se puede reducir más."
             );
         }
         const { _id } = await Page.findOne({ page: page - 1, libro_id });
@@ -161,10 +148,10 @@ const pageDown = async (req = request, res = response) => {
         await Page.findOneAndUpdate({ _id }, { $set: { page } });
         await Page.findOneAndUpdate({ _id: id }, { $set: { page: page - 1 } });
         const data = {
-            message: 'Se actualizo correctamente los datos.',
+            message: "Se actualizo correctamente los datos.",
             result: {
                 request: {
-                    type: 'GET',
+                    type: "GET",
                     url: `http://localhost:8080/api/page`,
                 },
             },
@@ -185,10 +172,10 @@ const pageChange = async (req = request, res = response) => {
         await Page.findOneAndUpdate({ _id }, { $set: { page } });
         await Page.findOneAndUpdate({ _id: id }, { $set: { page: npage } });
         const data = {
-            message: 'Se actualizo correctamente los datos',
+            message: "Se actualizo correctamente los datos",
             result: {
                 request: {
-                    type: 'GET',
+                    type: "GET",
                     url: `http://localhost:8080/api/page`,
                 },
             },
@@ -205,7 +192,7 @@ const pagePut = async (req = request, res = response) => {
         const { npage } = req.body;
         const { libro_id, page } = await Page.findById(id);
         if (npage === page) {
-            throw new httpExeption(400, 'Esta registrado esa página.');
+            throw new httpExeption(400, "Esta registrado esa página.");
         }
         const results = await Page.find({ libro_id });
         await Page.findOneAndUpdate({ _id: id }, { $set: { page: 0 } });
@@ -230,10 +217,10 @@ const pagePut = async (req = request, res = response) => {
         }
         await Page.findOneAndUpdate({ _id: id }, { $set: { page: npage } });
         const data = {
-            message: 'Se actualizo correctamente los datos',
+            message: "Se actualizo correctamente los datos",
             result: {
                 request: {
-                    type: 'GET',
+                    type: "GET",
                     url: `http://localhost:8080/api/page`,
                 },
             },
@@ -249,11 +236,11 @@ const pageDelete = async (req = request, res = ressponse) => {
         const { id } = req.params;
         const result = await Page.findByIdAndDelete({ _id: id });
         const data = {
-            message: 'Se elimino Correctamente.',
+            message: "Se elimino Correctamente.",
             result: {
                 id: result._id,
                 request: {
-                    type: 'GET',
+                    type: "GET",
                     url: `http://localhost:8080/api/user/`,
                 },
             },
