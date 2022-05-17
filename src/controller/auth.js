@@ -20,7 +20,7 @@ const login = async (req = request, res = response) => {
             throw new httpExeption(400, 'La clave no coincide.');
         }
 
-        const token = await generarJWT(result.uid);
+        const token = await generarJWT(result._id);
 
         res.status(200).json({ result, token });
     } catch (error) {

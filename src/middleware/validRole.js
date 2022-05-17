@@ -34,15 +34,16 @@ const validRoles = (...roles) => {
                 });
             }
 
-            const { rol } = usr;
-            if (!roles.includes(rol)) {
+            const { role } = usr;
+            if (!roles.includes(role)) {
                 res.status(401).json({
-                    message: `el servicio requiere uno de estos roles ${rols}`,
+                    message: `el servicio requiere uno de estos roles ${roles} | ${role} `,
                 });
             }
+            next()
         } catch (error) {
             res.status(501).json({
-                message: error,
+                message: `Error: ${error}`,
             });
         }
     };
