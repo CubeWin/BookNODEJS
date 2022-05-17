@@ -7,13 +7,14 @@ const {
   userLogIn,
 } = require("../controller/user");
 const { validToken } = require("../middleware/validarJWT");
+const { validRole } = require("../middleware/validRole");
 
 const userRoute = Router();
 
-userRoute.get("/:user",validToken, userGetOne);
-userRoute.post("/",validToken, userCreate);
-userRoute.put("/:id",validToken, userChangePsw);
-userRoute.delete("/:id",validToken, userDelete);
+userRoute.get("/:user",[validToken, validRole], userGetOne);
+userRoute.post("/",[validToken, validRole], userCreate);
+userRoute.put("/:id",[validToken, validRole], userChangePsw);
+userRoute.delete("/:id",[validToken, validRole], userDelete);
 userRoute.post("/log/", userLogIn);
 
 module.exports = userRoute;

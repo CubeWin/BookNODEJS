@@ -1,13 +1,13 @@
-const { request, response } = require('express');
+const { request, response } = require("express");
 
-const { User } = require('../models');
+const { User } = require("../models");
 
 const {
     httpExeption,
     _validData,
     encryptPassword,
     matchPassword,
-} = require('../common');
+} = require("../common");
 
 const userGetOne = async (req = request, res = response) => {
     try {
@@ -25,7 +25,7 @@ const userGetOne = async (req = request, res = response) => {
             name,
             email,
             request: {
-                type: 'GET',
+                type: "GET",
                 url: `http://localhost:8080/api/user/${username}`,
             },
         });
@@ -42,7 +42,7 @@ const userCreate = async (req = request, res = response) => {
         if (!isEncrypt) {
             throw new httpExeption(
                 400,
-                'la clave debe tener 4 digitos como minimo'
+                "la clave debe tener 4 digitos como minimo"
             );
         }
         const user = new User({
@@ -53,13 +53,13 @@ const userCreate = async (req = request, res = response) => {
         });
         const result = await user.save();
         const data = {
-            message: 'Se registro correctamente.',
+            message: "Se registro correctamente.",
             result: {
                 id: result._id,
                 name: result.name,
                 username: result.username,
                 request: {
-                    type: 'GET',
+                    type: "GET",
                     url: `http://localhost:8080/api/user/${result.username}`,
                 },
             },
@@ -83,9 +83,9 @@ const userLogIn = async (req = request, res = response) => {
         }
         const isMatchPwd = await matchPassword(password, result.password);
         if (!isMatchPwd) {
-            throw new httpExeption(400, 'La clave no coincide.');
+            throw new httpExeption(400, "La clave no coincide.");
         }
-        res.status(200).json({ message: 'Datos Correctos' });
+        res.status(200).json({ message: "Datos Correctos" });
     } catch (error) {
         const { status, data } = _validData(error);
         res.status(status).json({ data });
@@ -103,14 +103,14 @@ const userChangePsw = async (req = request, res = response) => {
 
         const isMatchPwd = await matchPassword(password, result.password);
         if (!isMatchPwd) {
-            throw new httpExeption(400, 'la clave no coincide.');
+            throw new httpExeption(400, "la clave no coincide.");
         }
 
         const { isEncrypt, pwdHash } = await encryptPassword(npassword);
         if (!isEncrypt) {
             throw new httpExeption(
                 400,
-                'la clave debe tener 4 digitos como minimo'
+                "la clave debe tener 4 digitos como minimo"
             );
         }
 
@@ -123,11 +123,11 @@ const userChangePsw = async (req = request, res = response) => {
         await result.save();
 
         const data = {
-            message: 'Se actualizo correctamente.',
+            message: "Se actualizo correctamente.",
             result: {
                 id,
                 request: {
-                    type: 'GET',
+                    type: "GET",
                     url: `http://localhost:8080/api/user/${uresult.username}`,
                 },
             },
@@ -142,7 +142,10 @@ const userChangePsw = async (req = request, res = response) => {
 const userDelete = async (req = request, res = response) => {
     try {
         const { id } = req.params;
-        const result = await User.findByIdAndDelete({ _id: id });
+        const result = await User.findOneAndUpdate(
+            { _id: id },
+            { $set: { state: false } }
+        );
         if (!result) {
             throw new httpExeption(
                 400,
@@ -150,11 +153,11 @@ const userDelete = async (req = request, res = response) => {
             );
         }
         const data = {
-            message: 'Se elimino correctamente.',
+            message: "Se elimino correctamente.",
             result: {
                 id: result._id,
                 request: {
-                    type: 'GET',
+                    type: "GET",
                     url: `http://localhost:8080/api/user/`,
                 },
             },

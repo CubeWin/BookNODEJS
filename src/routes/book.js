@@ -5,6 +5,6 @@ const { validToken } = require("../middleware/validarJWT");
 const bookRoute = Router();
 
 bookRoute.get("/", bookGetAll);
-bookRoute.post("/",validToken, createBook);
+bookRoute.post("/",[validToken,validRoles("ADMIN_ROLE", "USER_ROLE")], createBook);
 
 module.exports = bookRoute;

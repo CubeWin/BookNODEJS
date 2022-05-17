@@ -10,16 +10,17 @@ const {
     pageDelete,
 } = require("../controller/page");
 const { validToken } = require("../middleware/validarJWT");
+const { validRoles } = require("../middleware/validRole");
 
 const pageRoute = Router();
 
-pageRoute.get("/:book", pageGetAll);// !cambio a se busca por libro
-pageRoute.post("/", validToken, pageCreate);
-pageRoute.put("/lock/:id", validToken, pageLock);
-pageRoute.put("/up/:id", validToken, pageUp);
-pageRoute.put("/down/:id", validToken, pageDown);
-pageRoute.put("/change/:id", validToken, pageChange);
-pageRoute.put("/put/:id", validToken, pagePut);
-pageRoute.delete("/put/:id", validToken, pageDelete);
+pageRoute.get("/:book", pageGetAll);
+pageRoute.post("/", [validToken, validRoles("ADMIN_ROLE", "USER_ROLE")], pageCreate);
+pageRoute.put("/lock/:id", [validToken, validRoles("ADMIN_ROLE", "USER_ROLE")], pageLock);
+pageRoute.put("/up/:id", [validToken, validRoles("ADMIN_ROLE", "USER_ROLE")], pageUp);
+pageRoute.put("/down/:id", [validToken, validRoles("ADMIN_ROLE", "USER_ROLE")], pageDown);
+pageRoute.put("/change/:id", [validToken, validRoles("ADMIN_ROLE", "USER_ROLE")], pageChange);
+pageRoute.put("/put/:id", [validToken, validRoles("ADMIN_ROLE", "USER_ROLE")], pagePut);
+pageRoute.delete("/put/:id", [validToken, validRoles("ADMIN_ROLE", "USER_ROLE")], pageDelete);
 
 module.exports = pageRoute;

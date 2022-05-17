@@ -1,29 +1,39 @@
-const { Schema, model } = require('mongoose');
-const uniqueValidator = require('mongoose-unique-validator');
+const { Schema, model } = require("mongoose");
+const uniqueValidator = require("mongoose-unique-validator");
 
 const userSchema = Schema(
     {
         username: {
             type: String,
-            required: [true, 'El usuario es requerido.'],
+            required: [true, "El usuario es requerido."],
             unique: true,
         },
         password: {
             type: String,
-            required: [true, 'Ingresar Clave.'],
+            required: [true, "Ingresar Clave."],
         },
         email: {
             type: String,
-            required: [true, 'Ingresar Correo'],
+            required: [true, "Ingresar Correo"],
             match: [
                 /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-                'El correo no es valido.',
+                "El correo no es valido.",
             ],
             unique: true,
         },
         name: {
             type: String,
-            required: [true, 'Ingresar nombre'],
+            required: [true, "Ingresar nombre"],
+        },
+        role: {
+            type: String,
+            required: true,
+            emun: ["ADMIN_ROLE", "USER_ROLE"],
+        },
+        state: {
+            type: Boolean,
+            default: true,
+            required: [true, "El estado es obligatorio"],
         },
     },
     {
@@ -41,4 +51,4 @@ userSchema.methods.toJSON = function () {
     return usuario;
 };
 
-module.exports = model('User', userSchema);
+module.exports = model("User", userSchema);

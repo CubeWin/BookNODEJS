@@ -18,6 +18,11 @@ const bookSchema = Schema(
     picture: {
       type: String,
     },
+    state:{
+      type: Boolean,
+      default: true,
+      required: [true, 'El estado es obligatorio']
+    }
   },
   { timestamps: true }
 );

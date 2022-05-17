@@ -4,13 +4,14 @@ const { mostrarImagen, updatePicture } = require('../controller/upload');
 
 const { validToken } = require('../middleware/validarJWT');
 const {validFileUpload} = require('../middleware/validFile');
+const { validRoles } = require('../middleware/validRole');
 
 const uploadRouter = Router();
 
 uploadRouter.post('/');
 
-uploadRouter.put('/:collection/:id',[validToken,validFileUpload], updatePicture);
+uploadRouter.put('/:collection/:id',[validToken,validRoles("ADMIN_ROLE", "USER_ROLE"),validFileUpload], updatePicture);
 
-uploadRouter.get('/:collection/:id',[validToken,validFileUpload], mostrarImagen);
+uploadRouter.get('/:collection/:id',[validToken,validRoles("ADMIN_ROLE", "USER_ROLE"),validFileUpload], mostrarImagen);
 
 module.exports = uploadRouter;

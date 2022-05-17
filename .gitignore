@@ -3,3 +3,4 @@ node_modules
 .vscode
 public/uploads/book/
 public/uploads/page/
+id_ed25519.pub
