@@ -1,8 +1,7 @@
 const { request, response } = require('express');
 
-const { httpExeption, _validData } = require('../common');
-
 const { User, Book } = require('../models');
+const { httpExeption, _validData } = require('../common');
 
 const bookGetAll = async (req = request, res = response) => {
     try {
@@ -36,8 +35,6 @@ const createBook = async (req = request, res = response) => {
         if (!user_result) {
             throw new httpExeption(400, 'No se encontro el usuario.');
         }
-
-        // const picture = await uploadFile(req.files, undefined, 'book');
 
         const book = new Book({
             user_id,

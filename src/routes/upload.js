@@ -2,9 +2,7 @@ const { Router } = require("express");
 
 const { mostrarImagen, updatePicture } = require("../controller/upload");
 
-const { validToken } = require("../middleware/validarJWT");
-const { validFileUpload } = require("../middleware/validFile");
-const { validRoles } = require("../middleware/validRole");
+const { validFileUpload, validToken, validRoles } = require("../middleware");
 
 const uploadRouter = Router();
 

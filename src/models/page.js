@@ -19,6 +19,7 @@ const pageSchema = Schema(
     },
     picture: {
       type: String,
+      default: `no-image`,
     },
     lock: {
       type: Boolean,

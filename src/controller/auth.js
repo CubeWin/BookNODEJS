@@ -1,9 +1,12 @@
-const { request, response } = require('express');
+const { request, response } = require("express");
 
-const User = require('../models/user');
-
-const { _validData, matchPassword, httpExeption } = require('../common');
-const { generarJWT } = require('../common/generarJwt');
+const { User } = require("../models");
+const {
+    _validData,
+    matchPassword,
+    httpExeption,
+    generarJWT,
+} = require("../common");
 
 const login = async (req = request, res = response) => {
     try {
@@ -17,7 +20,7 @@ const login = async (req = request, res = response) => {
         }
         const isMatchPwd = await matchPassword(password, result.password);
         if (!isMatchPwd) {
-            throw new httpExeption(400, 'La clave no coincide.');
+            throw new httpExeption(400, "La clave no coincide.");
         }
 
         const token = await generarJWT(result._id);

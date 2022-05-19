@@ -1,7 +1,6 @@
 const { request, response } = require("express");
 
 const { User } = require("../models");
-
 const {
     httpExeption,
     _validData,
@@ -37,7 +36,7 @@ const userGetOne = async (req = request, res = response) => {
 
 const userCreate = async (req = request, res = response) => {
     try {
-        const { username, name, password, email } = req.body;
+        const { username, name, password, email, role } = req.body;
         const { isEncrypt, pwdHash } = await encryptPassword(password);
         if (!isEncrypt) {
             throw new httpExeption(
@@ -50,6 +49,7 @@ const userCreate = async (req = request, res = response) => {
             name,
             password: pwdHash,
             email,
+            role,
         });
         const result = await user.save();
         const data = {
@@ -65,27 +65,6 @@ const userCreate = async (req = request, res = response) => {
             },
         };
         res.status(200).json(data);
-    } catch (error) {
-        const { status, data } = _validData(error);
-        res.status(status).json({ data });
-    }
-};
-
-const userLogIn = async (req = request, res = response) => {
-    try {
-        const { user, password } = req.body;
-        const result = await User.findOne({ username: user });
-        if (!result) {
-            throw new httpExeption(
-                400,
-                `El usuario ${user} no se encuentra en la BD`
-            );
-        }
-        const isMatchPwd = await matchPassword(password, result.password);
-        if (!isMatchPwd) {
-            throw new httpExeption(400, "La clave no coincide.");
-        }
-        res.status(200).json({ message: "Datos Correctos" });
     } catch (error) {
         const { status, data } = _validData(error);
         res.status(status).json({ data });
@@ -114,13 +93,10 @@ const userChangePsw = async (req = request, res = response) => {
             );
         }
 
-        // const uresult = await User.findOneAndUpdate(
-        //   { _id: id },
-        //   { $set: { password: pwdHash } },
-        //   { runValidators: true, context: "query" }
-        // );
-        result.password = pwdHash;
-        await result.save();
+        await User.findOneAndUpdate(
+            { _id: result.id },
+            { $set: { password: pwdHash } }
+        );
 
         const data = {
             message: "Se actualizo correctamente.",
@@ -128,7 +104,7 @@ const userChangePsw = async (req = request, res = response) => {
                 id,
                 request: {
                     type: "GET",
-                    url: `http://localhost:8080/api/user/${uresult.username}`,
+                    url: `http://localhost:8080/api/user/${result.username}`,
                 },
             },
         };
@@ -172,7 +148,6 @@ const userDelete = async (req = request, res = response) => {
 module.exports = {
     userGetOne,
     userCreate,
-    userLogIn,
     userChangePsw,
     userDelete,
 };

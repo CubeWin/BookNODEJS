@@ -2,9 +2,8 @@ const { response } = require('express');
 const path = require('path');
 const fs = require('fs');
 
-const { httpExeption, _validData, uploadFile } = require('../common');
-
 const { Book, Page } = require('../models');
+const { httpExeption, _validData, uploadFile } = require('../common');
 
 const mostrarImagen = async (req, res = response) => {
     try {
@@ -48,7 +47,6 @@ const mostrarImagen = async (req, res = response) => {
             }
         }
 
-        // !Envia imagen por defecto
         const pathImage = path.join(
             __dirname,
             '../../public/uploads/no-image.jpg'
@@ -89,7 +87,7 @@ const updatePicture = async (req, res = response) => {
             default:
                 throw new httpExeption(500, `coleccion invalida`);
         }
-        // !Limpiar imagenes previas
+
         if (result.picture) {
             const pathPicture = path.join(
                 __dirname,
@@ -102,7 +100,6 @@ const updatePicture = async (req, res = response) => {
             }
         }
 
-        // ?Registrar nueva imagen
         const picture = await uploadFile(req.files, undefined, collection);
         result.picture = picture;
         await result.save();

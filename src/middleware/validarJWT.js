@@ -6,7 +6,7 @@ const validToken = async (req = request, res = response, next) => {
     try {
         const token = req.header("auth-token");
         const { uid } = await jwt.verify(token, process.env.SECRETORPRIVATEKEY);
-        
+
         //verificar el id del token existe
         const usuario = await User.findById(uid);
         if (!usuario) {
@@ -22,6 +22,7 @@ const validToken = async (req = request, res = response, next) => {
         }
 
         req.usuario = usuario; // creo una variable en el req para poder usar despues
+        // *
 
         next();
     } catch (error) {

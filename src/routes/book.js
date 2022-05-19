@@ -1,7 +1,6 @@
 const { Router } = require("express");
 const { bookGetAll, createBook } = require("../controller/book");
-const { validToken } = require("../middleware/validarJWT");
-const { validRoles } = require("../middleware/validRole");
+const { validToken, validRoles } = require("../middleware");
 
 const bookRoute = Router();
 

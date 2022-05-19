@@ -1,12 +1,11 @@
 const { request, response } = require("express");
 
-const { httpExeption, _validData } = require("../common");
-
 const { User, Book, Page } = require("../models");
+const { httpExeption, _validData } = require("../common");
 
 const pageGetAll = async (req = request, res = response) => {
     try {
-        const { book } = req.params();
+        const { book } = req.params;
         const result = await Page.find({ libro_id: book });
         const data = {
             count: result.length,
@@ -26,7 +25,7 @@ const pageGetAll = async (req = request, res = response) => {
         };
         res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ error });
+        res.status(500).json({ error: `=> ${error}` });
     }
 };
 
@@ -186,52 +185,7 @@ const pageChange = async (req = request, res = response) => {
     }
 };
 
-const pagePut = async (req = request, res = response) => {
-    try {
-        const { id } = req.params;
-        const { npage } = req.body;
-        const { libro_id, page } = await Page.findById(id);
-        if (npage === page) {
-            throw new httpExeption(400, "Esta registrado esa página.");
-        }
-        const results = await Page.find({ libro_id });
-        await Page.findOneAndUpdate({ _id: id }, { $set: { page: 0 } });
-        if (npage > page) {
-            results.map(async (r) => {
-                if (r.page < npage && r.page >= page) {
-                    await Page.findOneAndUpdate(
-                        { _id: r._id },
-                        { $set: { page: r.page + 1 } }
-                    );
-                }
-            });
-        } else {
-            result.map(async (r) => {
-                if (r.page > npage && r.page <= page) {
-                    await Page.findOneAndUpdate(
-                        { _id: r._id },
-                        { $set: { page: r.page - 1 } }
-                    );
-                }
-            });
-        }
-        await Page.findOneAndUpdate({ _id: id }, { $set: { page: npage } });
-        const data = {
-            message: "Se actualizo correctamente los datos",
-            result: {
-                request: {
-                    type: "GET",
-                    url: `http://localhost:8080/api/page`,
-                },
-            },
-        };
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(500).json({ error });
-    }
-};
-
-const pageDelete = async (req = request, res = ressponse) => {
+const pageDelete = async (req = request, res = response) => {
     try {
         const { id } = req.params;
         const result = await Page.findByIdAndDelete({ _id: id });
@@ -258,6 +212,5 @@ module.exports = {
     pageUp,
     pageDown,
     pageChange,
-    pagePut,
     pageDelete,
 };
